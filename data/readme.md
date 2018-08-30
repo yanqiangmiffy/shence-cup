@@ -1,0 +1,3 @@
+- 数据存放目录
+  - all_docs.txt
+  - train_docs_keywords.txt
