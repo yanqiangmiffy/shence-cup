@@ -14,12 +14,9 @@ pos_model_path = os.path.join(LTP_DATA_DIR, 'pos.model')  # 词性标注模型�
 
 segmentor=Segmentor()
 segmentor.load(cws_model_path)
-words=segmentor.segment('游戏讲述的是一群富有勇气又有一丝小坏的人们的传奇，他们正试着逃离惠灵顿威尔士单调古板的生活。')
 
 postagger = Postagger() # 初始化实例
 postagger.load(pos_model_path)  # 加载模型
-words = ['元芳', '你', '怎么', '看']  # 分词结果
-postags = postagger.postag(words)  # 词性标注
 
 
 
@@ -27,7 +24,7 @@ postags = postagger.postag(words)  # 词性标注
 
 '''
  词性：
- nr 人名
+ nh	person name	杜甫, 汤姆
  nz 其他专名
  ns 地名
  n 名词
@@ -43,14 +40,15 @@ def extract_keyword_by_possag():
     for line in tqdm(all_docs_file):
         keywords=[]
         data=line.strip().split('')
-
-
-    data = {'id': ids,
-            'label1': labels_1,
-            'label2': labels_2}
-
-    df_data = pd.DataFrame(data, columns=['id', 'label1', 'label2'])
-    df_data.to_csv('result/04_jieba_postag.csv', index=False)
+        words=segmentor.segment(data[1])
+        postags=postagger.postag(words)
+        print("|".join(words)," ".join(postags))
+    # data = {'id': ids,
+    #         'label1': labels_1,
+    #         'label2': labels_2}
+    #
+    # df_data = pd.DataFrame(data, columns=['id', 'label1', 'label2'])
+    # df_data.to_csv('result/04_jieba_postag.csv', index=False)
 
 extract_keyword_by_possag()
 
