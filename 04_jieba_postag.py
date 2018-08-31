@@ -58,6 +58,7 @@ def extract_keyword_by_possag():
     df_data = pd.DataFrame(data, columns=['id', 'label1', 'label2'])
     df_data.to_csv('result/04_jieba_postag.csv', index=False)
 
+    # 关闭文件
+    all_docs_file.close()
 extract_keyword_by_possag()
 
-all_docs_file.close()

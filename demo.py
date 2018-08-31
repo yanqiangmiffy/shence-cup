@@ -83,3 +83,8 @@ print('\t'.join(netags))
 recognizer.release()  # 释放模型
 
 
+# from itertools import chain
+# a=chain([1,2,4],['a','c',1])
+# for data in a:
+#     print(data)
+
