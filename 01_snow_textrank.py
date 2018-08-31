@@ -17,12 +17,24 @@ for line in tqdm(all_docs_file):
     data=line.strip().split('')
     ids.append(data[0])
     # text=data[1] + data[2].replace('\xa0', '').replace('\u3000', '')
-    text=data[1] + data[2]
+    text=data[1]
     snow=SnowNLP(text)
     keyword=snow.keywords(limit=5)
-    labels_1.append(keyword[0])
-    labels_2.append(keyword[1])
+    if len(keyword)>2:
+        labels_1.append(keyword[0])
+        labels_2.append(keyword[1])
+    if len(keyword)==1:
+        labels_1.append(keyword[0])
+        labels_2.append(snow.words[1])
+    if len(keyword)<1:
+        if len(snow.words)>1:
+            labels_1.append(snow.words[0])
+            labels_2.append(snow.words[1])
 
+        else:
+            print(data[1])
+            labels_1.append(snow.words[0])
+            labels_2.append('')
 # import csv
 # with open('result/01_snow_textrnak.csv','w',encoding='utf-8',newline='') as out_data:
 #     csv_writer=csv.writer(out_data)

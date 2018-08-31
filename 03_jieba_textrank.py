@@ -33,6 +33,7 @@ def extract_keyword_by_textrank():
             words=[word for word in jieba.cut(data[1])]
             labels_1.append(words[0])
             labels_2.append(random.choice(words))
+
     data = {'id': ids,
             'label1': labels_1,
             'label2': labels_2}
