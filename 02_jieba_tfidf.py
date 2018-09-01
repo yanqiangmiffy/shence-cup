@@ -19,6 +19,8 @@ def extract_keyword_by_tfidf():
     for line in tqdm(all_docs_file):
         data=line.strip().split('\001')
         ids.append(data[0])
+        if len(data)!=3:
+            print(data)
         text=data[1]+data[2]
         keywords=[keyword for keyword, weight in extract_tags(text, withWeight=True,topK=5)]
         if len(keywords)>=2:
