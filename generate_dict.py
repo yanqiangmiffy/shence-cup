@@ -37,15 +37,17 @@ def get_tag_word():
     """
     test_data=pd.read_csv('data/test_docs.csv')
     titles=test_data['title'].tolist()
-    pattern=re.compile(r'《(.+)》|【(.+)】|“(.+)”')
+    # pattern=re.compile(r'《(.+)》|【(.+)】|“(.+)”') # 【】 干扰项有点多，先不考虑
+    pattern=re.compile(r'《(.*?)》|“(.*?)”')
     for title in tqdm(titles):
         keywords=re.findall(pattern,title)
         if keywords:
-            print(keywords)
-            print(title)
-
-
+            # print(keywords, title)
+            for keyword in keywords:
+                for word in keyword:
+                    if word and len(word)<10:
+                        custom_dict_file.write('{0} {1} nz\n'.format(word,str(random.randint(10,20))))
 if __name__ == '__main__':
-    # get_keyword()
+    get_keyword()
     get_tag_word()
     custom_dict_file.close()
