@@ -41,7 +41,7 @@ postagger.load(pos_model_path)  # 加载模型
  v 动词
 '''
 
-allow_pos={'nh':1,'nz':2,'ns':3,'ws':4,'n':5,',r':6,'j':7,'i':8,'nt':9,'a':10,'m':11,'v':12}
+allow_pos={'nh':1,'nz':2,'ns':3,'ws':4,'n':5,'j':6,'r':7,'i':8,'nt':9,'a':10,'m':11,'v':12}
 all_docs_file=open('data/all_docs.txt','r',encoding='utf-8')
 train_docs_file=open('data/train_docs_keywords.txt','r',encoding='utf-8')
 
@@ -50,13 +50,11 @@ def get_keyword_by_id(train_ids,keywords,doc_id):
     根据doc的id提取从训练集返回正确的关键词
     :return:
     """
-
     # print(data[1].strip().split(',')," ".join(postagger.postag(data[1].strip().split(','))))
     dict_word=[word for keyword in keywords for word in keyword ]
     with open('data/lexicon','w',encoding='utf-8') as dict_file:
         for word in dict_word:
             dict_file.write(word+'\n')
-
 
     if doc_id in train_ids:
         # print(doc_id,train_ids.index(doc_id))

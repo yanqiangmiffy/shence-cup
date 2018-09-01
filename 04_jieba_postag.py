@@ -11,10 +11,14 @@ import jieba
  nr 人名
  nz 其他专名
  ns 地名
+ nt 机构团体
  n 名词
 '''
 
 all_docs_file=open('data/all_docs.txt','r',encoding='utf-8')
+allow_pos={'nr':1,'nz':2,'ns':3,'ws':4,'n':5,'j':6,'r':7,'i':8,'nt':9,'a':10,'m':11,'v':12}
+train_docs_file=open('data/train_docs_keywords.txt','r',encoding='utf-8')
+
 
 # 基于jieba的textrank提取关键词
 def extract_keyword_by_possag():
@@ -27,6 +31,7 @@ def extract_keyword_by_possag():
 
         word_tags=[(word,pos) for word,pos in posseg.cut(data[1])] # 标题
         for word_tag in word_tags:
+            print(word_tag)
             if word_tag[1] == 'nr':
                 keywords.append(word_tag[0])
             for word_tag in word_tags:
