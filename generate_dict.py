@@ -16,8 +16,8 @@ import pandas as pd
 import random
 import re
 from tqdm import tqdm
-custom_dict_file=open('data/custom_dict.txt','a',encoding='utf-8')
-
+custom_dict_file=open('data/custom_dict.txt','w',encoding='utf-8')
+lexicon_file=open('data/lexicon.txt','w',encoding='utf-8') # pyltp的自定义词典
 
 def get_keyword():
     """
@@ -29,7 +29,7 @@ def get_keyword():
     keywords=[word  for keyword in keywords for word in keyword]
     for keyword in keywords:
         custom_dict_file.write('{0} {1} nz\n'.format(keyword,str(random.randint(10,20))))
-
+        lexicon_file.write(keyword+'\n')
 def get_tag_word():
     """
     提取《》、【】,“”中的专有名词：test_docs.csv
@@ -46,8 +46,30 @@ def get_tag_word():
             for keyword in keywords:
                 for word in keyword:
                     if word and len(word)<10:
-                        custom_dict_file.write('{0} {1} nz\n'.format(word,str(random.randint(10,20))))
+                        # custom_dict_file.write('{0} {1} nz\n'.format(word,str(random.randint(10,20))))
+                        custom_dict_file.write('{0} {1}\n'.format(word,str(random.randint(10,20))))
+                        lexicon_file.write(word + '\n')
+
+def get_sougou():
+    with open('data/sogou_dict.txt','r',encoding='utf-8') as file:
+        flag=[]
+        words=[]
+        for line in tqdm(file.readlines()):
+            data=line.strip().split(' ')
+            if data[0] not in flag:
+                if len(data)==3:
+                    words.append((data[0],data[2]))
+                else:
+                    words.append((data[0],''))
+                flag.append(data[0])
+        words=list(set(words))
+        for word in words:
+            custom_dict_file.write('{0} {1} {2}\n'.format(word[0], str(random.randint(10, 20)),word[0]))
+            lexicon_file.write(word + '\n')
+
 if __name__ == '__main__':
     get_keyword()
     get_tag_word()
+    get_sougou()
     custom_dict_file.close()
+    lexicon_file.close()
