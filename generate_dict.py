@@ -16,7 +16,7 @@ import pandas as pd
 import random
 import re
 from tqdm import tqdm
-custom_dict_file=open('data/custom1_dict.txt','w',encoding='utf-8')
+custom_dict_file=open('data/custom_dict.txt','w',encoding='utf-8')
 lexicon_file=open('data/lexicon.txt','w',encoding='utf-8') # pyltp的自定义词典
 
 def get_keyword():
@@ -28,8 +28,9 @@ def get_keyword():
     keywords=train_data['keyword'].apply(lambda x:x.split(',')).tolist()
     keywords=[word  for keyword in keywords for word in keyword]
     for keyword in keywords:
-        custom_dict_file.write('{0} {1} nz\n'.format(keyword,str(random.randint(10,20))))
-        lexicon_file.write(keyword+'\n')
+        if len(keyword)>0:
+            custom_dict_file.write('{0} {1} nz\n'.format(keyword,str(random.randint(10,20))))
+            lexicon_file.write(keyword+'\n')
 def get_tag_word():
     """
     提取《》、【】,“”中的专有名词：test_docs.csv
