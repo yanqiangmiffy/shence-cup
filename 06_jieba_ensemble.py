@@ -49,20 +49,18 @@ def extract_keyword_ensemble():
                 keywords.append(word_pos)
 
         keywords = sorted(keywords, reverse=False, key=lambda x: allow_pos[x[1]])
-        print(keywords)
-        # if len(keywords) < 1:
-        #     print(word_tags, data[1])
 
-        if len(keywords) ==1:
-            labels_1.append(keywords[0][0])
-            labels_2.append('')
-        elif len(keywords)==0:
-            labels_1.append(random.choice(word_tags)[0])
-            labels_2.append(random.choice(word_tags)[0])
+        if len(keywords) <2:
+            # 使用tf-idf
             empty+=1
+            temp_keywords = [keyword for keyword, weight in extract_tags(data[1]+data[2], withWeight=True, topK=5)]
+            labels_1.append(temp_keywords[0])
+            labels_2.append(temp_keywords[1])
         else:
             labels_1.append(keywords[0][0])
             labels_2.append(keywords[1][0])
+    print(empty)
+
     data = {'id': ids,
             'label1': labels_1,
             'label2': labels_2}
