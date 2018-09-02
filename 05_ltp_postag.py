@@ -16,7 +16,7 @@ pos_model_path = os.path.join(LTP_DATA_DIR, 'pos.model')  # 词性标注模型�
 
 # 加载自定义词典
 segmentor=Segmentor()
-segmentor.load_with_lexicon(cws_model_path,'data/lexicon')
+segmentor.load_with_lexicon(cws_model_path,'data/lexicon.txt')
 # segmentor.load(cws_model_path)
 postagger = Postagger() # 初始化实例
 postagger.load(pos_model_path)  # 加载模型
@@ -84,28 +84,20 @@ def extract_keyword_by_ltppossag():
         words=segmentor.segment(data[1])
         postags=postagger.postag(words)
         # print("|".join(words)," ".join(postags))
-        train_keyword=get_keyword_by_id(train_ids,train_keywords,doc_id=data[0].strip())
 
-        if train_keyword:
-            if len(train_keyword)>=2:
-                labels_1.append(train_keyword[0])
-                labels_2.append(train_keyword[1])
-            else:
-                labels_1.append(train_keyword[0])
-                labels_2.append('')
+        for word_pos in zip(words, postags):
+            if word_pos[1] in allow_pos:
+                all_temp_keywords.append(word_pos)
+        all_temp_keywords = sorted(all_temp_keywords, reverse=False, key=lambda x: allow_pos[x[1]])
+
+        if len(all_temp_keywords) < 2:
+            labels_1.append(all_temp_keywords[0][0])
+            labels_2.append('')
         else:
+            labels_1.append(all_temp_keywords[0][0])
+            labels_2.append(all_temp_keywords[1][0])
 
-            for word_pos in zip(words,postags):
-                if word_pos[1] in allow_pos:
-                    all_temp_keywords.append(word_pos)
-            all_temp_keywords=sorted(all_temp_keywords, reverse=False,key=lambda x:allow_pos[x[1]])
 
-            if len(all_temp_keywords)<2:
-                labels_1.append(all_temp_keywords[0][0])
-                labels_2.append('')
-            else:
-                labels_1.append(all_temp_keywords[0][0])
-                labels_2.append(all_temp_keywords[1][0])
     data = {'id': ids,
             'label1': labels_1,
             'label2': labels_2}

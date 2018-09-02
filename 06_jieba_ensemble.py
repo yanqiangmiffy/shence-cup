@@ -29,7 +29,7 @@ jieba.load_userdict('data/custom_dict.txt') # 设置词库
 '''
 
 all_docs_file=open('data/all_docs.txt','r',encoding='utf-8')
-allow_pos={'nr':1,'nz':2,'ns':3,'nt':4,'eng':5,'n':6,'l':7,'i':8,'a':9,'nrt':10,'v':11,'t':12}
+allow_pos={'nr':1,'nz':2,'ns':3,'nt':4,'eng':5,'l':6,'i':7,'n':8,'a':9,'nrt':10,'v':11,'t':12}
 train_docs_file=open('data/train_docs_keywords.txt','r',encoding='utf-8')
 
 
@@ -48,12 +48,15 @@ def extract_keyword_ensemble():
             if word_pos[1] in allow_pos:
                 keywords.append(word_pos)
 
+        keywords=[keyword for keyword in keywords if len(keyword[0])>1]
         keywords = sorted(keywords, reverse=False, key=lambda x: allow_pos[x[1]])
+        # print(keywords)
 
         if len(keywords) <2:
             # 使用tf-idf
             empty+=1
             temp_keywords = [keyword for keyword, weight in extract_tags(data[1]+data[2], withWeight=True, topK=5)]
+            # print("tfidf:",temp_keywords)
             labels_1.append(temp_keywords[0])
             labels_2.append(temp_keywords[1])
         else:

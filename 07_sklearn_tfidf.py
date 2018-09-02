@@ -31,7 +31,7 @@ from sklearn.feature_extraction.text import CountVectorizer,TfidfTransformer
 '''
 
 all_docs_file=open('data/all_docs.txt','r',encoding='utf-8')
-allow_pos={'nr':1,'nz':2,'ns':3,'nt':4,'eng':5,'n':6,'l':7,'i':8,'a':9,'nrt':10,'v':11,'t':12,'vn':13}
+allow_pos={'nr':1,'nz':2,'ns':3,'nt':4,'eng':5,'l':6,'i':7,'a':8,'nrt':9,'n':10,'v':11,'t':12}
 stop_words=open('data/stop_words.txt','r',encoding='utf-8').read().split('\n')
 
 
@@ -54,7 +54,8 @@ def generate_docs():
         word_tags=[]
         for word, pos in posseg.cut(doc):
             if word not in stop_words and pos in allow_pos:
-                word_tags.append((word, pos))
+                if len(word)>1:
+                    word_tags.append((word, pos))
         new_doc=" ".join([word_tag[0] for word_tag in word_tags])
         # print(new_doc)
         all_docs.append(new_doc)
