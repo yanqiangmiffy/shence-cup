@@ -38,7 +38,7 @@ max        5973.000000
 Name: doc_len, dtype: float64
 """
 
-# 统计下训练集的词性
+# 统计下训练集的词性(pyltp)
 import pandas as pd
 import os
 from pyltp import Segmentor,Postagger
@@ -64,3 +64,16 @@ print(pos_dict)
 # 全部词性
 # for line in open('data/lexicon.txt','r',encoding='utf-8'):
 #     print(line.strip()," ".join(postagger.postag([line.strip()])))
+
+import jieba.posseg
+jieba.load_userdict('data/custom_dict.txt')
+
+jieba_pos=[]
+for keyword in keywords:
+    for word in keyword:
+        for word,tag in jieba.posseg.cut(word):
+            if tag=='ng':
+                print(word)
+            jieba_pos.append(tag)
+jieba_pos_dict=Counter(jieba_pos)
+print(jieba_pos_dict)
