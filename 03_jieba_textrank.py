@@ -6,6 +6,7 @@ import pandas as pd
 from jieba.analyse import *
 import jieba.analyse
 from tqdm import tqdm
+jieba.load_userdict('data/custom_dict.txt')
 jieba.analyse.set_stop_words('data/stop_words.txt')
 import random
 # 加载数据

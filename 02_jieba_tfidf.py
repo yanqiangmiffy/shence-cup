@@ -27,9 +27,6 @@ def extract_keyword_by_tfidf():
         else:
             labels_1.append(keywords[0])
             labels_2.append('')
-
-
-
     data = {'id': ids,
             'label1': labels_1,
             'label2': labels_2}

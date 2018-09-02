@@ -123,3 +123,5 @@ print(global_count_data, global_count_data.shape, type(global_count_data))
 
 data={'a':1,'b':2}
 print(list(data.keys()))
+
+print(" ".join(jieba.cut('"大象杀人"的故事')))

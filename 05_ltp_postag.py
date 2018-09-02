@@ -37,11 +37,10 @@ postagger.load(pos_model_path)  # 加载模型
  i 习语,方言
  nt 时间
  a 形容词
- m 数位词
  v 动词
 '''
 
-allow_pos={'nh':1,'nz':2,'ns':3,'ws':4,'n':5,'j':6,'r':7,'i':8,'nt':9,'a':10,'m':11,'v':12}
+allow_pos={'nh':1,'nz':2,'ns':3,'ws':4,'n':5,'j':6,'r':7,'i':8,'nt':9,'a':10,'v':11}
 all_docs_file=open('data/all_docs.txt','r',encoding='utf-8')
 train_docs_file=open('data/train_docs_keywords.txt','r',encoding='utf-8')
 

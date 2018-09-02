@@ -16,7 +16,7 @@ import pandas as pd
 import random
 import re
 from tqdm import tqdm
-custom_dict_file=open('data/custom_dict.txt','w',encoding='utf-8')
+custom_dict_file=open('data/custom1_dict.txt','w',encoding='utf-8')
 lexicon_file=open('data/lexicon.txt','w',encoding='utf-8') # pyltp的自定义词典
 
 def get_keyword():
@@ -45,8 +45,7 @@ def get_tag_word():
             # print(keywords, title)
             for keyword in keywords:
                 for word in keyword:
-                    if word and len(word)<10:
-                        # custom_dict_file.write('{0} {1} nz\n'.format(word,str(random.randint(10,20))))
+                    if word and len(word)<10 and len(word)>1:
                         custom_dict_file.write('{0} {1}\n'.format(word,str(random.randint(10,20))))
                         lexicon_file.write(word + '\n')
 
@@ -62,10 +61,12 @@ def get_sougou():
                 else:
                     words.append((data[0],''))
                 flag.append(data[0])
-        words=list(set(words))
+
         for word in words:
-            custom_dict_file.write('{0} {1} {2}\n'.format(word[0], str(random.randint(10, 20)),word[0]))
-            lexicon_file.write(word + '\n')
+            custom_dict_file.write('{0} {1} {2}\n'.format(word[0], str(random.randint(10, 20)),word[1]))
+            lexicon_file.write(word[0] + '\n')
+
+
 
 if __name__ == '__main__':
     get_keyword()
