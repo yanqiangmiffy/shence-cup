@@ -30,7 +30,7 @@ jieba.load_userdict('data/custom_dict.txt') # 设置词库
 
 test_data=pd.read_csv('data/test_docs.csv')
 train_data=pd.read_csv('data/new_train_docs.csv')
-allow_pos={'nr':1,'nz':2,'ns':3,'nt':4,'eng':5,'n':6,'l':7,'i':8,'a':9,'nrt':10,'v':11,'t':12}
+allow_pos={'nz':1,'nr':2,'ns':3,'nt':4,'eng':5,'n':6,'l':7,'i':8,'a':9,'nrt':10,'v':11,'t':12}
 
 
 def extract_keyword_ensemble(test_data):

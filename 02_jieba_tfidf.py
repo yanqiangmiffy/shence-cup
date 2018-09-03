@@ -22,7 +22,7 @@ def extract_keyword_by_tfidf(test_data):
     labels_1 = []
     labels_2 = []
     for data in tqdm(zip(titles,docs)):
-        temp_keywords = [keyword for keyword, weight in extract_tags(data[0] + str(data[1]),withWeight=True, topK=5)]
+        temp_keywords = [keyword for keyword, weight in extract_tags(data[0] + str(data[1]), withWeight=True, topK=5)]
         # print("tfidf:",temp_keywords)
         labels_1.append(temp_keywords[0])
         labels_2.append(temp_keywords[1])
@@ -34,5 +34,34 @@ def extract_keyword_by_tfidf(test_data):
     df_data = pd.DataFrame(data, columns=['id', 'label1', 'label2'])
     df_data.to_csv('result/02_jieba_tfidf.csv', index=False)
 
+all_pos=['ns', 'n', 'vn', 'v','nr','nt','eng','l','i','a','nrt']
+def evaluate(df_data=None):
+    ids, titles, docs = df_data['id'], df_data['title'], df_data['doc']
+    true_keywords=df_data['keyword'].apply(lambda x:x.split(','))
+    labels_1 = []
+    labels_2 = []
+    empty = 0
+    score=0
+    for data in tqdm(zip(titles, docs,true_keywords)):
+        text=data[0] + str(data[1])
+        temp_keywords = [keyword for keyword, weight in
+                         extract_tags(text[:200], withWeight=True, topK=5)]
+        # print("tfidf:",temp_keywords)
+        labels_1.append(temp_keywords[0])
+        labels_2.append(temp_keywords[1])
+        print(temp_keywords[0], temp_keywords[1], data[2])
+        if temp_keywords[0] in data[2]:
+            score += 0.5
+        if temp_keywords[1] in data[2]:
+            score += 0.5
+
+    data = {'id': ids,
+            'label1': labels_1,
+            'label2': labels_2}
+    df_data = pd.DataFrame(data, columns=['id', 'label1', 'label2'])
+    df_data.to_csv('result/06_train.csv', index=False)
+    print("使用tf-idf提取的次数：", empty)
+    print("最终得分为：",score)
 if __name__ == '__main__':
-    extract_keyword_by_tfidf(test_data)
+    # extract_keyword_by_tfidf(test_data)
+    evaluate(train_data)
