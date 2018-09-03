@@ -30,7 +30,7 @@ jieba.load_userdict('data/custom_dict.txt') # 设置词库
 
 test_data=pd.read_csv('data/test_docs.csv')
 train_data=pd.read_csv('data/new_train_docs.csv')
-allow_pos={'nr':1,'nz':2,'ns':3,'nt':4,'eng':5,'l':6,'i':7,'n':8,'a':9,'nrt':10,'v':11,'t':12}
+allow_pos={'nr':1,'nz':2,'ns':3,'nt':4,'eng':5,'n':6,'l':7,'i':8,'a':9,'nrt':10,'v':11,'t':12}
 
 
 def extract_keyword_ensemble(test_data):
@@ -49,7 +49,8 @@ def extract_keyword_ensemble(test_data):
                 keywords.append(word_pos)
 
         keywords=[keyword for keyword in keywords if len(keyword[0])>1]
-        keywords = sorted(keywords, reverse=False, key=lambda x: allow_pos[x[1]])
+        # 先按词性排序，再按长度排序
+        keywords = sorted(keywords, reverse=False, key=lambda x: (allow_pos[x[1]],-len(x[0])))
         # print(keywords)
 
         if len(keywords) <2:
@@ -71,13 +72,15 @@ def extract_keyword_ensemble(test_data):
     df_data.to_csv('result/06_jieba_ensemble.csv', index=False)
     print("使用tf-idf提取的次数：",empty)
 
-all_pos=['ns','vn', 'v','nr','nt','eng','l','i','a','nrt']
+# all_pos=['ns','vn', 'v','nr','nt','eng','l','i','a','nrt']
 def evaluate(df_data=None):
     ids, titles, docs = df_data['id'], df_data['title'], df_data['doc']
     true_keywords=df_data['keyword'].apply(lambda x:x.split(','))
     labels_1 = []
     labels_2 = []
-    empty = 0
+
+    empty,all_wrong,part_wrong= 0,0,0
+
     score=0
     for data in tqdm(zip(titles, docs,true_keywords)):
         keywords = []
@@ -88,8 +91,7 @@ def evaluate(df_data=None):
                 keywords.append(word_pos)
 
         keywords = [keyword for keyword in keywords if len(keyword[0]) > 1]
-        keywords = sorted(keywords, reverse=False, key=lambda x: allow_pos[x[1]])
-        # print(keywords)
+        keywords = sorted(keywords, reverse=False, key=lambda x: (allow_pos[x[1]], -len(x[0])))
 
         if len(keywords) < 2:
             # 使用tf-idf
@@ -99,7 +101,7 @@ def evaluate(df_data=None):
             # print("tfidf:",temp_keywords)
             labels_1.append(temp_keywords[0])
             labels_2.append(temp_keywords[1])
-            print(temp_keywords[0],temp_keywords[1],data[2])
+            # print(temp_keywords[0],temp_keywords[1],data[2])
             if temp_keywords[0] in data[2]:
                 score+=0.5
             if temp_keywords[1] in data[2]:
@@ -108,8 +110,8 @@ def evaluate(df_data=None):
             labels_1.append(keywords[0][0])
             labels_2.append(keywords[1][0])
 
-            # if keywords[0][0] not in data[2] and keywords[1][0] not in data[2]:
-            #     print(keywords[0][0],keywords[1][0],data[2],data[0],keywords)
+            if keywords[0][0] not in data[2] and keywords[1][0] not in data[2]:
+                print((keywords[0][0],keywords[1][0]),'--',data[2],'--',data[0],'--',keywords)
 
             if keywords[0][0] in data[2]:
                 score+=0.5
