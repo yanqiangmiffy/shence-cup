@@ -21,6 +21,9 @@ def load_docs():
 
 
 docs=load_docs()
+for doc in docs:
+    print(doc)
+    print('============')
 import pandas as pd
 df_data=pd.DataFrame(data=docs,columns=['doc'])
 df_data['doc_len']=df_data['doc'].apply(lambda x:len(x.split(' ')))
