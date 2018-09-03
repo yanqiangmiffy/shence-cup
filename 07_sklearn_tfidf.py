@@ -23,7 +23,7 @@ submit_result='result/07_sklearn_tfidf.csv'
 train_result='result/07_train.csv'
 
 
-def predict(docs):
+def predict(docs,data_path,df_data):
     """
     预测
     :return:
@@ -32,7 +32,7 @@ def predict(docs):
     labels_1 = []
     labels_2 = []
     model_path = 'model/cv_tfidf.pkl'
-    cv, tfidf_transformer = load_model(model_path, test_data_path, test_data)
+    cv, tfidf_transformer = load_model(model_path, test_data_path, test_data) # 加载全部的模型
     feature_names = cv.get_feature_names()
     for doc in tqdm(docs):
         doc = " ".join(doc.split()[:500])  # 关键词在文章的前半部分
@@ -48,7 +48,7 @@ def predict(docs):
     return labels_1,labels_2
 
 
-def extract_keyword_sklearn(documents,result_file):
+def extract_keyword_sklearn(documents,data_path, df_data,result_file):
     """
     生成提交结果
     :param documents
@@ -56,8 +56,8 @@ def extract_keyword_sklearn(documents,result_file):
     :return:
     """
 
-    ids = test_data['id']
-    labels_1, labels_2=predict(documents)
+    ids = df_data['id']
+    labels_1, labels_2=predict(documents,data_path, df_data)
     data = {'id': ids,
             'label1': labels_1,
             'label2': labels_2}
@@ -65,8 +65,26 @@ def extract_keyword_sklearn(documents,result_file):
     df_data.to_csv(result_file, index=False)
 
 
-extract_keyword_sklearn(test_docs,submit_result)
+extract_keyword_sklearn(test_docs,test_data_path,test_data,submit_result) # 预测提交结果
+# extract_keyword_sklearn(train_docs,train_data_path, train_data,train_result) # 预测训练集二级果
 
 
 def evaluate():
-    pass
+    true_keywords = train_data['keyword'].apply(lambda x: x.split(','))
+    predicted_data=pd.read_csv(train_result)
+    labels_1=predicted_data['label1'].tolist()
+    labels_2=predicted_data['label2'].tolist()
+
+    score=0
+    for word_1,word_2,true_key in zip(labels_1,labels_2,true_keywords):
+        if word_1 in true_key:
+            score+=0.5
+        if word_2 in true_key:
+            score+=0.5
+        if word_1 not in true_key and word_2 not in true_key:
+            print((word_1,word_2),true_key)
+    print(score)
+
+if __name__ == '__main__':
+
+    evaluate()

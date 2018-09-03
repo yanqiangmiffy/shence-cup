@@ -64,7 +64,7 @@ def get_sougou():
                 flag.append(data[0])
 
         for word in words:
-            custom_dict_file.write('{0} {1} {2}\n'.format(word[0], str(random.randint(10, 20)),word[1]))
+            custom_dict_file.write('{0} {1} {2}\n'.format(word[0], str(random.randint(100, 200)),word[1]))
             lexicon_file.write(word[0] + '\n')
 
 

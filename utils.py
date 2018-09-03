@@ -29,7 +29,7 @@ def generate_docs(data_path,df_data):
     ids, titles, docs = df_data['id'], df_data['title'], df_data['doc']
     print("generate docs..")
     all_docs = []
-    for data in tqdm(titles, docs):
+    for data in tqdm(zip(titles, docs)):
         doc = data[0] + '。' + data[1]
         word_tags = []
         for word, pos in posseg.cut(doc):
@@ -49,6 +49,7 @@ def load_docs(data_path,df_data):
     加载 分词后的文档
     :return:
     """
+    print("loading data from :",data_path)
     if os.path.exists(data_path):
         with open(data_path, 'rb') as in_data:
             all_docs = pickle.load(in_data)
@@ -98,9 +99,10 @@ def train(model_path,data_path,df_data):
     训练并返回模型
     :return:
     """
+    print("traing...")
     documents = load_docs(data_path,df_data)
-    print("train....")
-    cv = CountVectorizer(max_df=0.85, min_df=1, stop_words=stop_words)
+    print("train....",model_path)
+    cv = CountVectorizer(max_df=0.85, min_df=2,ngram_range=(1,2),stop_words=stop_words)
     word_count_vector = cv.fit_transform(documents)
 
     # 计算tfidf
@@ -119,6 +121,7 @@ def load_model(model_path,data_path,df_data):
     :param model_path:
     :return:
     """
+    print("loading model")
     if os.path.exists(model_path):
         with open(model_path, 'rb') as in_data:
             cv = pickle.load(in_data)

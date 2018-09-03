@@ -51,7 +51,7 @@ for word,tag in jieba.posseg.cut(text):
 # print('我\001爱你')
 
 documents = ['我 爱 北京 天安门，天安门 很 壮观',
-             '我 经常 在 广场 拍照']
+             '我 经常 北京 天安门 在 广场 拍照']
 from sklearn.feature_extraction.text import TfidfVectorizer
 global_tfidf_vecc = TfidfVectorizer()
 global_count_data = global_tfidf_vecc.fit_transform(documents)
@@ -121,13 +121,15 @@ print(global_count_data, global_count_data.shape, type(global_count_data))
 #     print(k,keywords[k])
 
 
-# data={'a':1,'b':2}
-# print(list(data.keys()))
-# jieba.load_userdict('data/custom_dict.txt')
+data={'a':1,'b':2}
+print(list(data.keys()))
+jieba.load_userdict('data/custom_dict.txt')
 # print("-".join(jieba.cut('杰森·伯恩，它是一个帅哥')))
+for word ,tag in jieba.posseg.cut('黄渤托举高秋梓'):
+    print(word,tag)
 
-allow_pos={'nr':1,'nz':2,'ns':3,'nt':4,'eng':5,'n':6,'l':7,'i':8,'a':9,'nrt':10,'v':11,'t':12}
-
-keywords=[('陈烈', 'nr'), ('导演', 'nz'), ('电影', 'nz'), ('爱是永恒', 'nz'), ('院线', 'n'), ('著名', 'a'), ('上映', 'v')]
-keywords = sorted(keywords, reverse=False, key=lambda x: (allow_pos[x[1]],-len(x[0])))
-print(keywords)
+# allow_pos={'nr':1,'nz':2,'ns':3,'nt':4,'eng':5,'n':6,'l':7,'i':8,'a':9,'nrt':10,'v':11,'t':12}
+#
+# keywords=[('陈烈', 'nr'), ('导演', 'nz'), ('电影', 'nz'), ('爱是永恒', 'nz'), ('院线', 'n'), ('著名', 'a'), ('上映', 'v')]
+# keywords = sorted(keywords, reverse=False, key=lambda x: (allow_pos[x[1]],-len(x[0])))
+# print(keywords)

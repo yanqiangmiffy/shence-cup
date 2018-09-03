@@ -30,7 +30,7 @@ jieba.load_userdict('data/custom_dict.txt') # 设置词库
 
 test_data=pd.read_csv('data/test_docs.csv')
 train_data=pd.read_csv('data/new_train_docs.csv')
-allow_pos={'nz':1,'nr':2,'ns':3,'nt':4,'eng':5,'n':6,'l':7,'i':8,'a':9,'nrt':10,'v':11,'t':12}
+allow_pos={'nr':1,'nz':2,'ns':3,'nt':4,'eng':5,'n':6,'l':7,'i':8,'a':9,'nrt':10,'v':11,'t':12}
 
 
 def extract_keyword_ensemble(test_data):
@@ -73,9 +73,9 @@ def extract_keyword_ensemble(test_data):
     print("使用tf-idf提取的次数：",empty)
 
 # all_pos=['ns','vn', 'v','nr','nt','eng','l','i','a','nrt']
-def evaluate(df_data=None):
-    ids, titles, docs = df_data['id'], df_data['title'], df_data['doc']
-    true_keywords=df_data['keyword'].apply(lambda x:x.split(','))
+def evaluate():
+    ids, titles, docs = train_data['id'], train_data['title'], train_data['doc']
+    true_keywords=train_data['keyword'].apply(lambda x:x.split(','))
     labels_1 = []
     labels_2 = []
 
@@ -129,4 +129,4 @@ def evaluate(df_data=None):
 
 if __name__ == '__main__':
     # extract_keyword_ensemble(test_data)
-    evaluate(df_data=train_data)
+    evaluate()
