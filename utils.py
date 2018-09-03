@@ -21,12 +21,12 @@ allow_pos = {'nr': 1, 'nz': 2, 'ns': 3, 'nt': 4, 'eng': 5, 'l': 6, 'i': 7, 'a': 
 stop_words = open('data/stop_words.txt', 'r', encoding='utf-8').read().split('\n')
 
 
-def generate_docs(data_path):
+def generate_docs(data_path,df_data):
     """
     标题和文章分句 重要词性组成
     :return:
     """
-    ids, titles, docs = test_data['id'], test_data['title'], test_data['doc']
+    ids, titles, docs = df_data['id'], df_data['title'], df_data['doc']
     print("generate docs..")
     all_docs = []
     for data in tqdm(titles, docs):
@@ -44,7 +44,7 @@ def generate_docs(data_path):
     return all_docs
 
 
-def load_docs(data_path = 'data/all_doc_pos.pkl'):
+def load_docs(data_path,df_data):
     """
     加载 分词后的文档
     :return:
@@ -54,7 +54,7 @@ def load_docs(data_path = 'data/all_doc_pos.pkl'):
             all_docs = pickle.load(in_data)
         return all_docs
 
-    all_docs=generate_docs(data_path)
+    all_docs=generate_docs(data_path,df_data)
     return all_docs
 
 
@@ -93,12 +93,12 @@ def extract_topn_from_vector(feature_names, sorted_items, topn=10):
     return results
 
 
-def train(model_path):
+def train(model_path,data_path,df_data):
     """
     训练并返回模型
     :return:
     """
-    documents = load_docs()
+    documents = load_docs(data_path,df_data)
     print("train....")
     cv = CountVectorizer(max_df=0.85, min_df=1, stop_words=stop_words)
     word_count_vector = cv.fit_transform(documents)
@@ -113,7 +113,7 @@ def train(model_path):
     return cv, tfidf_transformer
 
 
-def load_model(model_path='model/cv_tfidf.pkl'):
+def load_model(model_path,data_path,df_data):
     """
     加载训练好的模型
     :param model_path:
@@ -125,7 +125,7 @@ def load_model(model_path='model/cv_tfidf.pkl'):
             tfidf_transformer = pickle.load(in_data)
         return cv, tfidf_transformer
 
-    cv, tfidf_transformer = train(model_path)
+    cv, tfidf_transformer = train(model_path,data_path,df_data)
     return cv, tfidf_transformer
 
 
@@ -136,7 +136,7 @@ def get_keywords(cv, tfidf_transformer, doc, feature_names):
 
     keywords = extract_topn_from_vector(feature_names, sorted_items, 10)
 
-    print(keywords)
+    # print(keywords)
     # for k in keywords:
     #     print(k, keywords[k])
 
