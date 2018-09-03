@@ -121,7 +121,13 @@ print(global_count_data, global_count_data.shape, type(global_count_data))
 #     print(k,keywords[k])
 
 
-data={'a':1,'b':2}
-print(list(data.keys()))
+# data={'a':1,'b':2}
+# print(list(data.keys()))
+# jieba.load_userdict('data/custom_dict.txt')
+# print("-".join(jieba.cut('杰森·伯恩，它是一个帅哥')))
 
-print(" ".join(jieba.cut('"大象杀人"的故事')))
+allow_pos={'nr':1,'nz':2,'ns':3,'nt':4,'eng':5,'n':6,'l':7,'i':8,'a':9,'nrt':10,'v':11,'t':12}
+
+keywords=[('陈烈', 'nr'), ('导演', 'nz'), ('电影', 'nz'), ('爱是永恒', 'nz'), ('院线', 'n'), ('著名', 'a'), ('上映', 'v')]
+keywords = sorted(keywords, reverse=False, key=lambda x: (allow_pos[x[1]],-len(x[0])))
+print(keywords)

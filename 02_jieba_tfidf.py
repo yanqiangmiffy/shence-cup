@@ -22,7 +22,7 @@ def extract_keyword_by_tfidf(test_data):
     labels_1 = []
     labels_2 = []
     for data in tqdm(zip(titles,docs)):
-        temp_keywords = [keyword for keyword, weight in extract_tags(data[0] + str(data[1]), withWeight=True, topK=5)]
+        temp_keywords = [keyword for keyword, weight in extract_tags(data[0] + str(data[1]),withWeight=True, topK=5)]
         # print("tfidf:",temp_keywords)
         labels_1.append(temp_keywords[0])
         labels_2.append(temp_keywords[1])
