@@ -166,5 +166,5 @@ def evaluate():
 
 
 if __name__ == '__main__':
-    extract_keyword_ensemble(test_data)
-    # evaluate()
+    # extract_keyword_ensemble(test_data)
+    evaluate()
