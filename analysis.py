@@ -4,26 +4,26 @@
 # @Time    : 2018/8/31 15:23
 
 # 统计下文档的长度
-# import os
-# import pickle
-# def load_docs():
-#     """
-#     标题和文章分句 重要词性组成
-#     :return:
-#     """
-#     data_path='data/all_doc_pos.pkl'
-#     if os.path.exists(data_path):
-#         with open(data_path,'rb') as in_data:
-#             all_docs=pickle.load(in_data)
-#         return all_docs
-#
-#
-#
-#
-# docs=load_docs()
-# for doc in docs:
-#     print(doc)
-#     print('============')
+import os
+import pickle
+def load_docs():
+    """
+    标题和文章分句 重要词性组成
+    :return:
+    """
+    data_path='data/all_doc_pos.pkl'
+    if os.path.exists(data_path):
+        with open(data_path,'rb') as in_data:
+            all_docs=pickle.load(in_data)
+        return all_docs
+
+
+
+
+docs=load_docs()
+for doc in docs:
+    print(doc)
+    print('============')
 # import pandas as pd
 # df_data=pd.DataFrame(data=docs,columns=['doc'])
 # df_data['doc_len']=df_data['doc'].apply(lambda x:len(x.split(' ')))
