@@ -40,15 +40,18 @@ def extract_keyword_ensemble(test_data):
     labels_1 = []
     labels_2 = []
     empty=0
-    for data in tqdm(zip(titles,docs)):
+    for title,doc in tqdm(zip(titles,docs)):
+
         keywords = []
 
-        word_tags=[(word,pos) for word,pos in posseg.cut(data[0])] # 标题
+        word_tags=[(word,pos) for word,pos in posseg.cut(title)] # 标题
         for word_pos in word_tags:
             if word_pos[1] in allow_pos:
                 keywords.append(word_pos)
 
+        # 根据看关键词筛选
         keywords=[keyword for keyword in keywords if len(keyword[0])>1]
+
         # 先按词性排序，再按长度排序
         keywords = sorted(keywords, reverse=False, key=lambda x: (allow_pos[x[1]],-len(x[0])))
         # print(keywords)
@@ -56,7 +59,7 @@ def extract_keyword_ensemble(test_data):
         if len(keywords) <2:
             # 使用tf-idf
             empty+=1
-            temp_keywords = [keyword for keyword, weight in extract_tags(data[0]+str(data[1]), withWeight=True, topK=5)]
+            temp_keywords = [keyword for keyword in extract_tags(title+str(doc)[:100]+str(doc)[:-50],topK=5)]
             # print("tfidf:",temp_keywords)
             labels_1.append(temp_keywords[0])
             labels_2.append(temp_keywords[1])
@@ -72,20 +75,25 @@ def extract_keyword_ensemble(test_data):
     df_data.to_csv('result/06_jieba_ensemble.csv', index=False)
     print("使用tf-idf提取的次数：",empty)
 
-# all_pos=['ns','vn', 'v','nr','nt','eng','l','i','a','nrt']
+all_pos=['ns', 'n', 'vn','nr','nt','eng','l','i','a','nrt']
+
+
 def evaluate():
     ids, titles, docs = train_data['id'], train_data['title'], train_data['doc']
     true_keywords=train_data['keyword'].apply(lambda x:x.split(','))
     labels_1 = []
     labels_2 = []
 
-    empty,all_wrong,part_wrong= 0,0,0
+    use_idf,part_wrong= 0,0
 
     score=0
     for data in tqdm(zip(titles, docs,true_keywords)):
+        title=data[0]
+        doc=data[1]
+
         keywords = []
 
-        word_tags = [(word, pos) for word, pos in posseg.cut(data[0])]  # 标题
+        word_tags = [(word, pos) for word, pos in posseg.cut(title)]  # 标题
         for word_pos in word_tags:
             if word_pos[1] in allow_pos:
                 keywords.append(word_pos)
@@ -93,40 +101,51 @@ def evaluate():
         keywords = [keyword for keyword in keywords if len(keyword[0]) > 1]
         keywords = sorted(keywords, reverse=False, key=lambda x: (allow_pos[x[1]], -len(x[0])))
 
+        true_keys=data[2]
         if len(keywords) < 2:
             # 使用tf-idf
-            empty += 1
-            temp_keywords = [keyword for keyword, weight in
-                             extract_tags(data[0] + str(data[1]), withWeight=True,allowPOS=(),topK=5)]
+            use_idf += 1
+            temp_keywords = [keyword for keyword in
+                             extract_tags(title + str(doc),topK=2)]
             # print("tfidf:",temp_keywords)
             labels_1.append(temp_keywords[0])
             labels_2.append(temp_keywords[1])
             # print(temp_keywords[0],temp_keywords[1],data[2])
-            if temp_keywords[0] in data[2]:
+            if temp_keywords[0] in true_keys:
                 score+=0.5
-            if temp_keywords[1] in data[2]:
+            if temp_keywords[1] in true_keys:
                 score+=0.5
         else:
-            labels_1.append(keywords[0][0])
-            labels_2.append(keywords[1][0])
+            key_1 = keywords[0][0]
+            key_2 = keywords[1][0]
 
-            if keywords[0][0] not in data[2] and keywords[1][0] not in data[2]:
-                print((keywords[0][0],keywords[1][0]),'--',data[2],'--',data[0],'--',keywords)
+            if key_1 not in true_keys or key_2 not in true_keys:
+                part_wrong+=1
+                # print("prediction--true keys--title--candidate keys")
+                temp_keywords = [keyword for keyword in
+                                 extract_tags(title + str(doc[:100])+str(doc[:-50]),topK=2)]
+                # key_1,key_2=temp_keywords
+                print((key_1,key_2),'--',temp_keywords,'--',true_keys,'--',title,'--',keywords)
 
-            if keywords[0][0] in data[2]:
+            if key_1 in true_keys:
                 score+=0.5
-            if keywords[1][0] in data[2]:
+
+            if key_2 in true_keys:
                 score+=0.5
+
+            labels_1.append(key_1)
+            labels_2.append(key_2)
 
     data = {'id': ids,
             'label1': labels_1,
             'label2': labels_2}
     df_data = pd.DataFrame(data, columns=['id', 'label1', 'label2'])
     df_data.to_csv('result/06_train.csv', index=False)
-    print("使用tf-idf提取的次数：", empty)
+    print("使用tf-idf提取的次数：", use_idf)
+    print("预测出错的次数：",part_wrong)
     print("最终得分为：",score)
 
 
 if __name__ == '__main__':
-    # extract_keyword_ensemble(test_data)
-    evaluate()
+    extract_keyword_ensemble(test_data)
+    # evaluate()
