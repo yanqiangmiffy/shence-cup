@@ -3,7 +3,7 @@
 # @Author  : quincyqiang
 # @File    : 06_jieba_ensemble.py
 # @Software: PyCharm
-
+import pickle
 import pandas as pd
 from tqdm import tqdm
 from jieba.analyse import extract_tags,textrank # tf-idf
@@ -95,9 +95,10 @@ def extract_keyword_ensemble(test_data):
     print("使用tf-idf提取的次数：",empty)
 
 
-
 def evaluate():
-    ids, titles, docs = train_data['id'], train_data['title'], train_data['doc']
+    ids, titles= train_data['id'], train_data['title']
+    with open('data/new_train_docs.pkl','rb') as in_data:
+        docs=pickle.load(in_data)
     true_keywords=train_data['keyword'].apply(lambda x:x.split(','))
     labels_1 = []
     labels_2 = []

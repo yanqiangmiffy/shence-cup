@@ -52,8 +52,8 @@ def keyword_counts(data_path,df_data,stop_words=(),allow_pos=()):
     """
     ids, titles, docs = df_data['id'], df_data['title'], df_data['doc']
     print("generate docs..")
-    all_data = []
-    for data in zip(titles, docs):
+    all_docs = []
+    for data in tqdm(zip(titles, docs)):
         candidate_keywords=[]
         doc = data[0] + '。' + data[1]
         word_tags = []
@@ -61,28 +61,28 @@ def keyword_counts(data_path,df_data,stop_words=(),allow_pos=()):
             if word not in stop_words and pos in allow_pos:
                 if len(word) > 1:
                     word_tags.append((word, pos))
-
+        # 提取特殊名字
         if '·' in word_tags:
             word_tags=generate_name(word_tags)
 
         # print(len(word_tags),len(set(word_tags)),word_tags)
         for key,value in Counter(word_tags).items():
             candidate_keywords.append((key[0],key[1],value))
+
+        new_doc=" ".join([word[0] for word in candidate_keywords])
+        # print(new_doc)
+        # 保存分词好的数据
+        all_docs.append(new_doc)
         # 排序
-        candidate_keywords=sorted(candidate_keywords,key=lambda x:(x[2],allow_pos[x[1]],len(x[0])),reverse=True)
-        print(candidate_keywords)
-        all_data.append(candidate_keywords)
-
-
-
-
+        # candidate_keywords=sorted(candidate_keywords,key=lambda x:(x[2],allow_pos[x[1]],len(x[0])),reverse=True)
+        # # print(candidate_keywords)
     with open(data_path, 'wb') as out_data:
-        pickle.dump(all_data, out_data, pickle.HIGHEST_PROTOCOL)
-    return all_data
+        pickle.dump(all_docs, out_data, pickle.HIGHEST_PROTOCOL)
+    return all_docs
 
 
-# keyword_counts(train_data_path,train_data,stop_words,allow_pos)
-# keyword_counts(test_data_path,test_data,stop_words,allow_pos)
+x=keyword_counts(train_data_path,train_data,stop_words,allow_pos)
+x1=keyword_counts(test_data_path,test_data,stop_words,allow_pos)
 
 
 def evaluate(data_path, df_data, stop_words=(), allow_pos=()):
@@ -136,4 +136,4 @@ def evaluate(data_path, df_data, stop_words=(), allow_pos=()):
     return all_data
 
 
-evaluate(train_data_path,train_data,stop_words,allow_pos)
+# evaluate(train_data_path,train_data,stop_words,allow_pos)
