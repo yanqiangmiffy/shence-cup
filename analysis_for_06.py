@@ -117,19 +117,17 @@ def evaluate():
                     primary_words.append(word)
                 if tag in ['nr', 'nz','ns']:
                     primary_words.extend([word]*2)
-
             primary_text = " ".join(primary_words)
             # 拼接成最后的文本
             text=primary_text * 2 + title * 3 + " ".join(doc.split(' ')[:15]* 2)  + doc
-
             temp_keywords = [keyword for keyword in extract_tags(text,topK=2)]
-
             key_1,key_2=temp_keywords
             if key_1 not in true_keys or key_2 not in true_keys:
                 part_wrong+=1
                 print("---"*100)
-                print(temp_keywords,'--',true_keys,)
-                print("title and doc=>",title,'--',title_keywords,'--',doc)
+                print("tfidf:{}--title_keyword:{}--true_key:{}".
+                      format(temp_keywords,title_keywords,true_keys,))
+                print("title and doc=>",title,'--','--',doc)
                 print("abstract_text=>",abstract_text,abstract_text_pos)
                 print('primary_text=>',primary_text)
 
@@ -216,4 +214,4 @@ def extract_keyword_ensemble(test_data):
 
 if __name__ == '__main__':
     evaluate()
-    extract_keyword_ensemble(test_data)
+    # extract_keyword_ensemble(test_data)

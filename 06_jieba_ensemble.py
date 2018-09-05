@@ -58,7 +58,8 @@ def extract_keyword_ensemble(test_data):
     empty=0
     for title,doc in tqdm(zip(titles,test_docs)):
         keywords = []
-        word_tags=[(word,pos) for word,pos in posseg.cut(title)] # 标题
+        abstract_text = " ".join(doc.split(' ')[:15])
+        word_tags=[(word,pos) for word,pos in posseg.cut(title+abstract_text)] # 标题
 
         # 判断是否存在特殊符号
         if '·' in title:
