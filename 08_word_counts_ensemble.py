@@ -14,8 +14,8 @@ import pickle
 import jieba
 jieba.load_userdict('data/custom_dict.txt')  # 设置词库
 
-test_data_path='data/test_word_counts.pkl'
-train_data_path='data/train_word_counts.pkl'
+test_data_path='data/all_doc.pkl'
+train_data_path='data/new_train_docs.pkl'
 
 test_data = pd.read_csv('data/test_docs.csv')
 train_data = pd.read_csv('data/new_train_docs.csv')
@@ -55,7 +55,7 @@ def keyword_counts(data_path,df_data,stop_words=(),allow_pos=()):
     all_docs = []
     for data in tqdm(zip(titles, docs)):
         candidate_keywords=[]
-        doc = data[0] + '。' + data[1]
+        doc = str(data[0]) + '。' + str(data[1])
         word_tags = []
         for word, pos in posseg.cut(doc):
             if word not in stop_words and pos in allow_pos:
@@ -78,6 +78,9 @@ def keyword_counts(data_path,df_data,stop_words=(),allow_pos=()):
         # # print(candidate_keywords)
     with open(data_path, 'wb') as out_data:
         pickle.dump(all_docs, out_data, pickle.HIGHEST_PROTOCOL)
+    with open(data_path+'.txt','w',encoding='utf-8') as txt_file:
+        for doc in all_docs:
+            txt_file.write(doc+'\n')
     return all_docs
 
 

@@ -128,7 +128,7 @@ def evaluate():
             # 使用tf-idf
             use_idf += 1
             temp_keywords = [keyword for keyword in
-                             extract_tags(title + str(doc)[:100]+str(doc)[:-80],topK=2)]
+                             extract_tags(title + doc,topK=2)]
             # print("tfidf:",temp_keywords)
             labels_1.append(temp_keywords[0])
             labels_2.append(temp_keywords[1])
@@ -146,9 +146,9 @@ def evaluate():
                 # print("prediction--true keys--title--candidate keys")
                 temp_keywords = [keyword for keyword in
                                  extract_tags(title + str(doc),topK=2)]
-
-                print((key_1,key_2),'--',temp_keywords,'--',true_keys,'--',title,'--',keywords)
-
+                print("---"*100)
+                print((key_1,key_2),'--',temp_keywords,'--',true_keys,'--',title,'--',keywords,doc)
+                key_1,key_2=temp_keywords
             if key_1 in true_keys:
                 score+=0.5
             if key_2 in true_keys:
