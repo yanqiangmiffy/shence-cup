@@ -31,7 +31,7 @@ jieba.load_userdict('data/custom_dict.txt') # 设置词库
 test_data=pd.read_csv('data/test_docs.csv')
 train_data=pd.read_csv('data/new_train_docs.csv')
 allow_pos={'nr':1,'nz':2,'ns':3,'nt':4,'eng':5,'n':6,'l':7,'i':8,'a':9,'nrt':10,'v':11,'t':12}
-tf_pos = ['ns', 'n', 'vn', 'nr', 'nt', 'eng', 'nrt']
+tf_pos = ['ns', 'n', 'vn', 'nr', 'nt', 'eng', 'nrt','v']
 
 def generate_name(word_tags):
     name_pos = ['ns', 'n', 'vn', 'nr', 'nt', 'eng', 'nrt']
@@ -48,15 +48,15 @@ def generate_name(word_tags):
     return word_tags
 
 
-
 def extract_keyword_ensemble(test_data):
 
     ids,titles,docs=test_data['id'],test_data['title'],test_data['doc']
-
+    with open('data/all_doc.pkl','rb') as in_data:
+        test_docs=pickle.load(in_data)
     labels_1 = []
     labels_2 = []
     empty=0
-    for title,doc in tqdm(zip(titles,docs)):
+    for title,doc in tqdm(zip(titles,test_docs)):
         keywords = []
         word_tags=[(word,pos) for word,pos in posseg.cut(title)] # 标题
 
@@ -75,13 +75,31 @@ def extract_keyword_ensemble(test_data):
         keywords = sorted(keywords, reverse=False, key=lambda x: (allow_pos[x[1]],-len(x[0])))
         # print(keywords)
 
-        if len(keywords) <2:
+        if len(keywords) <2  or '？' in title or '！' in title:
             # 使用tf-idf
             empty+=1
-            temp_keywords = [keyword for keyword in extract_tags(title+str(doc)[:100]+str(doc)[:-50],topK=5)]
+
+            primary_words = []
+            for keyword in keywords:
+                if keyword[1] in ['nr', 'nz', 'nt', 'ns']:
+                    primary_words.append(keyword[0])
+            # title_text = " ".join([keyword[0] for keyword in keywords if keyword[1] in ['nr','nz']]) * 2
+            abstract_text = " ".join(doc.split(' ')[:15])
+            for word, tag in jieba.posseg.cut(abstract_text):
+                if tag in ['nr', 'nz']:
+                    primary_words.append(word)
+            primary_text = " ".join(primary_words)
+            temp_keywords = [keyword for keyword in
+                             extract_tags(primary_text * 2 + title * 3 + " ".join(doc.split(' ')[:15]) * 2 + doc,
+                                          topK=3)]
             # print("tfidf:",temp_keywords)
-            labels_1.append(temp_keywords[0])
-            labels_2.append(temp_keywords[1])
+            if len(temp_keywords)>=2:
+                labels_1.append(temp_keywords[0])
+                labels_2.append(temp_keywords[1])
+            else:
+                print(title)
+                labels_1.append(temp_keywords[0])
+                labels_2.append(' ')
         else:
             labels_1.append(keywords[0][0])
             labels_2.append(keywords[1][0])
@@ -102,14 +120,9 @@ def evaluate():
     true_keywords=train_data['keyword'].apply(lambda x:x.split(','))
     labels_1 = []
     labels_2 = []
-
     use_idf,part_wrong= 0,0
-
     score=0
-    for data in tqdm(zip(titles, docs,true_keywords)):
-        title=data[0]
-        doc=data[1]
-
+    for title,doc,true_keys in tqdm(zip(titles, docs,true_keywords)):
         keywords = []
         word_tags = [(word, pos) for word, pos in posseg.cut(title)]  # 标题
         # 判断是否存在特殊符号
@@ -122,17 +135,26 @@ def evaluate():
 
         keywords = [keyword for keyword in keywords if len(keyword[0]) > 1]
         keywords = sorted(keywords, reverse=False, key=lambda x: (allow_pos[x[1]], -len(x[0])))
-
-        true_keys=data[2]
-        if len(keywords) < 2:
+        if len(keywords) < 2 or '？' in title or '！' in title:
             # 使用tf-idf
             use_idf += 1
+
+            primary_words=[]
+            for keyword in keywords:
+                if keyword[1] in ['nr', 'nz','nt','ns']:
+                    primary_words.append(keyword[0])
+            # title_text = " ".join([keyword[0] for keyword in keywords if keyword[1] in ['nr','nz']]) * 2
+            abstract_text=" ".join(doc.split(' ')[:15])
+            for word, tag in jieba.posseg.cut(abstract_text):
+                if tag in ['nr', 'nz']:
+                    primary_words.append(word)
+            primary_text=" ".join(primary_words)
             temp_keywords = [keyword for keyword in
-                             extract_tags(title + doc,topK=2)]
-            # print("tfidf:",temp_keywords)
+                             extract_tags(primary_text * 2 + title * 3 +" ".join(doc.split(' ')[:15]) * 2 + doc,topK=2)]
+
             labels_1.append(temp_keywords[0])
             labels_2.append(temp_keywords[1])
-            # print(temp_keywords[0],temp_keywords[1],data[2])
+
             if temp_keywords[0] in true_keys:
                 score+=0.5
             if temp_keywords[1] in true_keys:
@@ -140,15 +162,29 @@ def evaluate():
         else:
             key_1 = keywords[0][0]
             key_2 = keywords[1][0]
-
+            # print(keywords)
             if key_1 not in true_keys or key_2 not in true_keys:
                 part_wrong+=1
-                # print("prediction--true keys--title--candidate keys")
+
+                # --------------权重
+                primary_words = []
+                for keyword in keywords:
+                    if keyword[1] in ['nr', 'nz', 'nt', 'ns']:
+                        primary_words.append(keyword[0])
+                # title_text = " ".join([keyword[0] for keyword in keywords if keyword[1] in ['nr','nz']]) * 2
+                abstract_text = " ".join(doc.split(' ')[:15])
+                for word, tag in jieba.posseg.cut(abstract_text):
+                    if tag in ['nr', 'nz']:
+                        primary_words.append(word)
+                primary_text = " ".join(primary_words)
                 temp_keywords = [keyword for keyword in
-                                 extract_tags(title + str(doc),topK=2)]
-                print("---"*100)
+                                 extract_tags(primary_text * 2 + title * 3 + " ".join(doc.split(' ')[:15]) * 2 + doc,
+                                              topK=2)]
+                # print("---"*100)
                 print((key_1,key_2),'--',temp_keywords,'--',true_keys,'--',title,'--',keywords,doc)
-                key_1,key_2=temp_keywords
+                # key_1,key_2=temp_keywords
+
+
             if key_1 in true_keys:
                 score+=0.5
             if key_2 in true_keys:
