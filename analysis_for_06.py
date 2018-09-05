@@ -105,15 +105,17 @@ def evaluate():
 
             primary_words = []
             for keyword in title_keywords:
-                if keyword[1] in ['nr', 'nz', 'nt', 'ns']:
+                if keyword[1] == 'n':
                     primary_words.append(keyword[0])
+                if keyword[1] in ['nr', 'nz', 'nt', 'ns']:
+                    primary_words.extend([keyword[0]]*2)
             # title_text = " ".join([keyword[0] for keyword in keywords if keyword[1] in ['nr','nz']]) * 2
             abstract_text = " ".join(doc.split(' ')[:15])
             abstract_text_pos=[(word,tag) for word,tag in jieba.posseg.cut(abstract_text)]
             for word, tag in jieba.posseg.cut(abstract_text):
                 if tag == 'n':
                     primary_words.append(word)
-                if tag in ['nr', 'nz']:
+                if tag in ['nr', 'nz','ns']:
                     primary_words.extend([word]*2)
 
             primary_text = " ".join(primary_words)
@@ -127,8 +129,8 @@ def evaluate():
                 part_wrong+=1
                 print("---"*100)
                 print(temp_keywords,'--',true_keys,)
-                print(title,'--',title_keywords,'--',doc)
-                print(abstract_text,abstract_text_pos)
+                print("title and doc=>",title,'--',title_keywords,'--',doc)
+                print("abstract_text=>",abstract_text,abstract_text_pos)
                 print('primary_text=>',primary_text)
 
             labels_1.append(temp_keywords[0])
@@ -198,8 +200,12 @@ def extract_keyword_ensemble(test_data):
             # 拼接成最后的文本
             text = primary_text * 2 + title * 3 + " ".join(doc.split(' ')[:15] * 2) + doc
             temp_keywords = [keyword for keyword in extract_tags(text, topK=2)]
-            labels_1.append(temp_keywords[0])
-            labels_2.append(temp_keywords[1])
+            if len(temp_keywords)>=2:
+                labels_1.append(temp_keywords[0])
+                labels_2.append(temp_keywords[1])
+            else:
+                labels_1.append(temp_keywords[0])
+                labels_2.append(' ')
     data = {'id': ids,
             'label1': labels_1,
             'label2': labels_2}
