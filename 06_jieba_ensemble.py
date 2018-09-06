@@ -76,7 +76,7 @@ def extract_keyword_ensemble(test_data):
         keywords = sorted(keywords, reverse=False, key=lambda x: (allow_pos[x[1]],-len(x[0])))
         # print(keywords)
 
-        if len(keywords) <2  or '？' in title or '！' in title:
+        if len(keywords) <2 :
             # 使用tf-idf
             empty+=1
 
@@ -136,7 +136,7 @@ def evaluate():
 
         keywords = [keyword for keyword in keywords if len(keyword[0]) > 1]
         keywords = sorted(keywords, reverse=False, key=lambda x: (allow_pos[x[1]], -len(x[0])))
-        if len(keywords) < 2 or '？' in title or '！' in title:
+        if len(keywords) < 2 :
             # 使用tf-idf
             use_idf += 1
 
@@ -204,5 +204,5 @@ def evaluate():
 
 
 if __name__ == '__main__':
-    # extract_keyword_ensemble(test_data)
-    evaluate()
+    extract_keyword_ensemble(test_data)
+    # evaluate()
