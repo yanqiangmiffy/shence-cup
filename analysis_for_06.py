@@ -79,14 +79,13 @@ def evaluate():
         title_keywords = [keyword for keyword in title_keywords if len(keyword[0]) > 1]
         title_keywords = sorted(title_keywords, reverse=False, key=lambda x: (allow_pos[x[1]], -len(x[0])))
 
-        if '·' in title:
-            if len(title_keywords)>=2:
-                key_1 = title_keywords[0][0]
-                key_2 = title_keywords[1][0]
-            else:
-                # print(keywords,title,word_tags)
-                key_1 = title_keywords[0][0]
-                key_2 = ''
+        title_allow_pos = ['nr', 'nz', 'ns']
+        flag = len(title_keywords) >= 2 and title_keywords[0][1] in title_allow_pos and \
+               title_keywords[1][1] in title_allow_pos
+
+        if flag or '·' in title:
+            key_1 = title_keywords[0][0]
+            key_2 = title_keywords[1][0]
 
             if key_1 not in true_keys or key_2 not in true_keys:
                 part_wrong+=1
@@ -119,7 +118,7 @@ def evaluate():
                     primary_words.extend([word]*2)
             primary_text = " ".join(primary_words)
             # 拼接成最后的文本
-            text=primary_text * 2 + title * 3 + " ".join(doc.split(' ')[:15]* 2)  + doc
+            text=primary_text * 2 + title * 10 + " ".join(doc.split(' ')[:15]* 2)  + doc
             temp_keywords = [keyword for keyword in extract_tags(text,topK=2)]
             key_1,key_2=temp_keywords
             if key_1 not in true_keys or key_2 not in true_keys:
@@ -171,7 +170,10 @@ def extract_keyword_ensemble(test_data):
         title_keywords = [keyword for keyword in title_keywords if len(keyword[0]) > 1]
         title_keywords = sorted(title_keywords, reverse=False, key=lambda x: (allow_pos[x[1]], -len(x[0])))
 
-        if '·' in title:
+        title_allow_pos = ['nr', 'nz', 'ns']
+        flag = len(title_keywords) >= 2 and title_keywords[0][1] in title_allow_pos and title_keywords[1][1] in title_allow_pos
+
+        if flag or '·' in title :
             if len(title_keywords) >= 2:
                 key_1 = title_keywords[0][0]
                 key_2 = title_keywords[1][0]
