@@ -6,8 +6,11 @@
 from sklearn.feature_extraction.text import CountVectorizer,TfidfTransformer
 import pickle
 import pandas as pd
-import gensim
-from gensim import corpora,models
+
+from gensim import corpora
+from gensim.models import LdaModel
+from gensim.corpora import Dictionary
+
 train_data=pd.read_csv('../data/new_train_docs.csv')
 true_keywords=train_data['keyword'].apply(lambda x:x.split(',')).tolist()
 titles=train_data['title'].tolist()
@@ -17,30 +20,28 @@ with open('../data/train_docs.pkl','rb') as in_data:
     train_docs=pickle.load(in_data)
 
 train_docs=[[word for word in doc.split(' ')] for doc in train_docs]
-print(train_docs[0])
-# 判断关键字的相似度
-model = gensim.models.Word2Vec(train_docs, size=1000)
-print(model.most_similar('水木年华', topn=10))
+
 
 dictionary = corpora.Dictionary(train_docs)
-print(dictionary)
 corpus = [dictionary.doc2bow(text) for text in train_docs]
-print(corpus)
+lda = LdaModel(corpus=corpus, id2word=dictionary, num_topics=6)
 
-tfidf = models.TfidfModel(corpus)
-corpus_tfidf = tfidf[corpus]
+topic_list = lda.print_topics(20)
+# print(type(lda.print_topics(20)))
 
-# 根据结果使用lsi做主题分类效果会比较好
-print('#############' * 4)
-lsi = gensim.models.lsimodel.LsiModel(corpus=corpus, id2word=dictionary, num_topics=2)
-corpus_lsi = lsi[corpus_tfidf]
-lsi.print_topics(2)
-for doc in corpus_lsi:
-    print(doc)
 
-print('#############' * 4)
-lda = gensim.models.ldamodel.LdaModel(corpus=corpus, id2word=dictionary, num_topics=2, update_every=0, passes=1)
-corpus_lda = lda[corpus_tfidf]
-lda.print_topics(2)
-for doc in corpus_lda:
-    print(doc)
+for topic in topic_list:
+    print(topic)
+print("第一主题",lda.print_topic(1))
+print('给定一个新文档，输出其主题分布')
+
+# test_doc = list(new_doc) #新文档进行分词
+test_doc = train_docs[2]  # 查看训练集中第三个样本的主题分布
+print(test_doc)
+doc_bow = dictionary.doc2bow(test_doc)  # 文档转换成bow
+doc_lda = lda[doc_bow]  # 得到新文档的主题分布
+# 输出新文档的主题分布
+print(doc_lda)
+
+for topic in doc_lda:
+    print("%s\t%f\n" % (lda.print_topic(topic[0]), topic[1]))

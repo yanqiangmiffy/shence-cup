@@ -167,9 +167,7 @@ def extract_keyword_ensemble(test_data):
         title_keywords = sorted(title_keywords, reverse=False, key=lambda x: (allow_pos[x[1]], -len(x[0])))
 
         title_allow_pos = ['nr', 'nz', 'ns']
-        flag = len(title_keywords) >= 2 and title_keywords[0][1] in title_allow_pos and title_keywords[1][1] in title_allow_pos
-
-        if flag or '·' in title :
+        if '·' in title :
             if len(title_keywords) >= 2:
                 key_1 = title_keywords[0][0]
                 key_2 = title_keywords[1][0]
