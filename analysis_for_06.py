@@ -146,7 +146,7 @@ def evaluate():
 
 def extract_keyword_ensemble(test_data):
     ids,titles=test_data['id'],test_data['title']
-    with open('data/all_doc.pkl','rb') as in_data:
+    with open('data/test_doc.pkl','rb') as in_data:
         test_docs=pickle.load(in_data)
     labels_1 = []
     labels_2 = []
