@@ -29,10 +29,10 @@ def get_keyword():
     keywords=[word  for keyword in keywords for word in keyword]
     for keyword in keywords:
         if len(keyword)>2:
-            custom_dict_file.write('{0} {1} nz\n'.format(keyword,str(random.randint(10,20))))
+            custom_dict_file.write('{0} {1} nz\n'.format(keyword,str(random.randint(100,200))))
             lexicon_file.write(keyword+'\n')
         elif len(keyword)>0:
-            custom_dict_file.write('{0} {1}\n'.format(keyword, str(random.randint(10, 20))))
+            custom_dict_file.write('{0} {1}\n'.format(keyword, str(random.randint(100,200))))
             lexicon_file.write(keyword + '\n')
 def get_tag_word():
     """
@@ -44,11 +44,11 @@ def get_tag_word():
     docs=test_data['doc'].tolist()
     # pattern=re.compile(r'《(.+)》|【(.+)】|“(.+)”') # 【】 干扰项有点多，先不考虑
     # pattern=re.compile(r'《(.*?)》|“(.*?)”')
-    pattern=re.compile(r'《(.*?)》')
+    print("提取书名号")
+    pattern_1=re.compile(r'《(.*?)》')
     for title,doc in tqdm(zip(titles,docs)):
-        keywords=re.findall(pattern,title)
+        keywords=re.findall(pattern_1,title)
         print(keywords)
-
         # if keywords:
         #     # print(keywords, title)
         #     for keyword in keywords:
@@ -61,8 +61,19 @@ def get_tag_word():
             # print(keywords, title)
             for keyword in keywords:
                 if keyword and len(keyword)<10 and len(keyword)>1:
-                        custom_dict_file.write('{0} {1} nz\n'.format(keyword,str(random.randint(10,20))))
+                        custom_dict_file.write('{0} {1} nz\n'.format(keyword,str(random.randint(100,200))))
                         lexicon_file.write(keyword + '\n')
+    print("提取引号")
+    pattern_2=re.compile(r'“(.*?)”')
+    for title, doc in tqdm(zip(titles, docs)):
+        keywords = re.findall(pattern_2, title)
+        print(keywords)
+        if keywords:
+            # print(keywords, title)
+            for keyword in keywords:
+                if keyword and len(keyword) < 8 and len(keyword) > 1:
+                    custom_dict_file.write('{0} {1}\n'.format(keyword, str(random.randint(20,50))))
+                    lexicon_file.write(keyword + '\n')
 
 def get_sougou():
     with open('data/sogou_dict.txt','r',encoding='utf-8') as file:

@@ -13,9 +13,11 @@ import pickle
 import jieba
 jieba.load_userdict('data/custom_dict.txt')  # 设置词库
 
+
 def txt2csv():
     all_data=pd.read_csv('data/all_docs.txt',sep='\001',header=None)
     all_data.columns=['id','title','doc']
+    all_data.to_csv('data/all_docs.csv',index=False)
     train_data=pd.read_csv('data/train_docs_keywords.txt',sep='\t',header=None)
     train_data.columns=['id','keyword']
 
@@ -41,7 +43,7 @@ def generate_name(word_tags):
     """
     name_pos = ['ns', 'n', 'vn', 'nr', 'nt', 'eng', 'nrt']
     for word_tag in word_tags:
-        if word_tag[0] == '·':
+        if word_tag[0] == '·' or word_tag[0] == '！':
             index = word_tags.index(word_tag)
             if (index+1)<len(word_tags):
                 prefix = word_tags[index - 1]
@@ -54,53 +56,45 @@ def generate_name(word_tags):
 
 
 def generate_tokenized_doc(data_path,df_data,stop_words=(),allow_pos=()):
-
-
-
-
     """
         标题和文章分句 重要词性组成
         :return:
         """
     ids, titles, docs = df_data['id'], df_data['title'], df_data['doc']
-    print("generate docs..")
+    print("generate docs..",data_path)
     all_docs = []
-    for data in tqdm(zip(titles, docs)):
-        candidate_keywords = []
-        doc = data[0] + '。' + data[1]
+    txt_file= open(data_path + '.txt', 'w', encoding='utf-8')
+    for title,doc in tqdm(zip(titles, docs)):
+
+        doc = str(title) + '。' + str(doc)
         word_tags = []
         for word, pos in posseg.cut(doc):
             if word not in stop_words and pos in allow_pos:
-                if len(word) > 1:
+                if len(word) > 1 and len(word)<10:
                     word_tags.append((word, pos))
         # 提取特殊名字
-        if '·' in word_tags:
-            word_tags = generate_name(word_tags)
-
-        # print(len(word_tags),len(set(word_tags)),word_tags)
-        for key, value in Counter(word_tags).items():
-            candidate_keywords.append((key[0], key[1], value))
-
-        new_doc = " ".join([word[0] for word in candidate_keywords])
+        # if '·' in title or '！' in title:
+        #     word_tags = generate_name(word_tags)
+        #     print(word_tags)
+        new_doc = " ".join([word_tag[0] for word_tag in word_tags])
         # print(new_doc)
         # 保存分词好的数据
         all_docs.append(new_doc)
-        # 排序
-        # candidate_keywords=sorted(candidate_keywords,key=lambda x:(x[2],allow_pos[x[1]],len(x[0])),reverse=True)
-        # # print(candidate_keywords)
+        txt_file.write(new_doc+'\n')
+
     with open(data_path, 'wb') as out_data:
         pickle.dump(all_docs, out_data, pickle.HIGHEST_PROTOCOL)
     return all_docs
 
 if __name__ == '__main__':
-    txt2csv()
-    # test_data_path = 'data/test_word_counts.pkl'
-    # train_data_path = 'data/train_word_counts.pkl'
-    # test_data = pd.read_csv('data/test_docs.csv')
-    # train_data = pd.read_csv('data/new_train_docs.csv')
-    # allow_pos = {'nr': 12, 'nz': 11, 'ns': 10, 'nt': 9, 'eng': 8, 'l': 7,
-    #              'i': 6, 'a': 5, 'nrt': 4, 'n': 3, 'v': 2, 't': 1}
-    # stop_words = open('data/stop_words.txt', 'r', encoding='utf-8').read().split('\n')
-    #
-    # x = generate_tokenized_doc(train_data_path, train_data, stop_words, allow_pos)
-    # x1 = generate_tokenized_doc(test_data_path, test_data, stop_words, allow_pos)
+    # txt2csv()
+    test_data_path = 'data/test_doc.pkl'
+    train_data_path = 'data/train_docs.pkl'
+    test_data = pd.read_csv('data/test_docs.csv')
+    train_data = pd.read_csv('data/new_train_docs.csv')
+    allow_pos = {'nr': 12, 'nz': 11, 'ns': 10, 'nt': 9, 'eng': 8, 'l': 7,
+                 'i': 6, 'a': 5, 'nrt': 4, 'n': 3, 'v': 2, 't': 1}
+    stop_words = open('data/stop_words.txt', 'r', encoding='utf-8').read().split('\n')
+
+    x = generate_tokenized_doc(train_data_path, train_data, stop_words, allow_pos)
+    x1 = generate_tokenized_doc(test_data_path, test_data, stop_words, allow_pos)

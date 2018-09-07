@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # @Author  : quincyqiang
-# @File    : 09_w2v_rf.py
+# @File    : 07_w2v_rf.py
 # @Time    : 2018/9/6 15:51
 
 """
@@ -108,6 +108,7 @@ def get_txt_keywords():
     re_list, accu_list = [], []  # 用于存储每篇文本的召回率和准确率
     clf = rf()
     # 依次遍历每一篇文本
+    score=0
     for i in range(len(txt_list)):
         now_doc_kw = kw_list[i]  # 当前文本的原始关键词列表
         now_doc_words = cut_words(txt_list[i])  # 当前文本的所有词语
@@ -135,6 +136,7 @@ def get_txt_keywords():
             for k2 in range(len(predictKw)):
                 if now_doc_kw[k1] == predictKw[k2]:
                     countKw += 1
+                    score+=0.5
                     break
         # 计算召回率
         recallRate = float(countKw) / float(len(now_doc_kw))
@@ -166,7 +168,7 @@ def get_txt_keywords():
     print('=======================================================================')
     print('Mean Recall Rate:', float(sum(re_list)) / float(len(re_list)))
     print('Mean Accuracy Rate:', float(sum(accu_list)) / float(len(accu_list)))
-
+    print("最终得分为：",score)
 
 if __name__ == '__main__':
     get_txt_keywords()

@@ -116,7 +116,7 @@ def extract_keyword_ensemble(test_data):
 
 def evaluate():
     ids, titles= train_data['id'], train_data['title']
-    with open('data/new_train_docs.pkl','rb') as in_data:
+    with open('data/train_docs.pkl','rb') as in_data:
         docs=pickle.load(in_data)
     true_keywords=train_data['keyword'].apply(lambda x:x.split(','))
     labels_1 = []
@@ -204,5 +204,5 @@ def evaluate():
 
 
 if __name__ == '__main__':
-    extract_keyword_ensemble(test_data)
-    # evaluate()
+    # extract_keyword_ensemble(test_data)
+    evaluate()
