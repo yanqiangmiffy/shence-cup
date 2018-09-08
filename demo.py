@@ -3,7 +3,7 @@
 # @File    : demo.py
 # @Time    : 2018/9/7 14:20
 import jieba
-jieba.load_userdict('data/custom_dict.txt')
+jieba.load_userdict('data/demo.txt')
 
-for word in jieba.cut('哈里斯·迪金森加盟《沉睡魔咒2》饰演王子'):
+for word in jieba.cut('以色列歼-20战机首次参与实战,'):
     print(word)

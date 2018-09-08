@@ -28,12 +28,12 @@ def get_keyword():
     keywords=train_data['keyword'].apply(lambda x:x.split(',')).tolist()
     keywords=[word  for keyword in keywords for word in keyword]
     for keyword in keywords:
-        if len(keyword)>2:
+        if len(keyword)>0:
             custom_dict_file.write('{0} {1} nz\n'.format(keyword,str(random.randint(100,200))))
             lexicon_file.write(keyword+'\n')
-        elif len(keyword)>0:
-            custom_dict_file.write('{0} {1}\n'.format(keyword, str(random.randint(100,200))))
-            lexicon_file.write(keyword + '\n')
+        # elif len(keyword)>0:
+        #     custom_dict_file.write('{0} {1}\n'.format(keyword, str(random.randint(100,200))))
+        #     lexicon_file.write(keyword + '\n')
 def get_tag_word():
     """
     提取《》、【】,“”中的专有名词：test_docs.csv
