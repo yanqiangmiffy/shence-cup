@@ -165,8 +165,6 @@ def extract_keyword_ensemble(test_data):
 
         title_keywords = [keyword for keyword in title_keywords if len(keyword[0]) > 1]
         title_keywords = sorted(title_keywords, reverse=False, key=lambda x: (allow_pos[x[1]], -len(x[0])))
-
-        title_allow_pos = ['nr', 'nz', 'ns']
         if '·' in title :
             if len(title_keywords) >= 2:
                 key_1 = title_keywords[0][0]
@@ -188,14 +186,14 @@ def extract_keyword_ensemble(test_data):
                 if keyword[1] == 'n':
                     primary_words.append(keyword[0])
                 if keyword[1] in ['nr', 'nz', 'nt', 'ns']:
-                    primary_words.extend([keyword[0]] * 5)
+                    primary_words.extend([keyword[0]] * len(keyword[0]))
 
             abstract_text = "".join(doc.split(' ')[:15])
             for word, tag in jieba.posseg.cut(abstract_text):
                 if tag == 'n':
                     primary_words.append(word)
                 if tag in ['nr', 'nz', 'ns']:
-                    primary_words.extend([word] * 5)
+                    primary_words.extend([word] * len(word))
             primary_text = "".join(primary_words)
             # 拼接成最后的文本
             text = primary_text * 2 + title * 6 + " ".join(doc.split(' ')[:15] * 2) + doc
