@@ -64,7 +64,7 @@ def generate_tokenized_doc(data_path,df_data,stop_words=(),allow_pos=()):
     print("generate docs..",data_path)
     all_docs = []
     txt_file= open(data_path + '.txt', 'w', encoding='utf-8')
-    for title,doc in tqdm(zip(titles, docs)):
+    for id,title,doc in tqdm(zip(ids,titles, docs)):
 
         doc = str(title) + '。' + str(doc)
         word_tags = []
@@ -80,7 +80,7 @@ def generate_tokenized_doc(data_path,df_data,stop_words=(),allow_pos=()):
         # print(new_doc)
         # 保存分词好的数据
         all_docs.append(new_doc)
-        txt_file.write(new_doc+'\n')
+        txt_file.write(id+'\t'+new_doc+'\n')
 
     with open(data_path, 'wb') as out_data:
         pickle.dump(all_docs, out_data, pickle.HIGHEST_PROTOCOL)

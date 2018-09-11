@@ -217,5 +217,5 @@ def extract_keyword_ensemble(test_data):
 
 
 if __name__ == '__main__':
-    # evaluate()
+    evaluate()
     extract_keyword_ensemble(test_data)
