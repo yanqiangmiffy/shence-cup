@@ -87,14 +87,14 @@ def generate_tokenized_doc(data_path,df_data,stop_words=(),allow_pos=()):
     return all_docs
 
 if __name__ == '__main__':
-    txt2csv()
-    # test_data_path = 'data/test_doc.pkl'
-    # train_data_path = 'data/train_docs.pkl'
-    # test_data = pd.read_csv('data/test_docs.csv')
-    # train_data = pd.read_csv('data/new_train_docs.csv')
-    # allow_pos = {'nr': 12, 'nz': 11, 'ns': 10, 'nt': 9, 'eng': 8, 'l': 7,
-    #              'i': 6, 'a': 5, 'nrt': 4, 'n': 3, 'v': 2, 't': 1}
-    # stop_words = open('data/stop_words.txt', 'r', encoding='utf-8').read().split('\n')
-    #
-    # x = generate_tokenized_doc(train_data_path, train_data, stop_words, allow_pos)
-    # x1 = generate_tokenized_doc(test_data_path, test_data, stop_words, allow_pos)
+    # txt2csv()
+    test_data_path = 'data/test_doc.pkl'
+    train_data_path = 'data/train_docs.pkl'
+    test_data = pd.read_csv('data/test_docs.csv')
+    train_data = pd.read_csv('data/new_train_docs.csv')
+    allow_pos = {'nr': 12, 'nz': 11, 'ns': 10, 'nt': 9, 'eng': 8, 'l': 7,
+                 'i': 6, 'a': 5, 'nrt': 4, 'n': 3, 'v': 2, 't': 1}
+    stop_words = open('data/stop_words.txt', 'r', encoding='utf-8').read().split('\n')
+
+    x = generate_tokenized_doc(train_data_path, train_data, stop_words, allow_pos)
+    x1 = generate_tokenized_doc(test_data_path, test_data, stop_words, allow_pos)

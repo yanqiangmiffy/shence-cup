@@ -10,7 +10,7 @@ extract keywords from a document
 - 04_jieba_postag.py:**425.0**
 - 05_jieba_postag.py:**334.5**
 - 06_jieba_ensemble.py:**515**
-
+- analysis_for_06.py:**607.5**
 ## 数据分析：
 - 1-40000：影视新闻
 - 40001-44060：体育新闻

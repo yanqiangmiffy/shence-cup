@@ -25,22 +25,6 @@ allow_pos={'nr':1,'nz':2,'ns':3,'nt':4,'eng':5,'n':6,'l':7,'i':8,'a':9,'nrt':10,
 tf_pos = ['ns', 'n', 'vn', 'nr', 'nt', 'eng', 'nrt','v','a']
 
 
-def generate_primary(keywords,title,doc):
-    primary_words = []
-    for keyword in keywords:
-        if keyword[1] in ['nr', 'nz', 'nt', 'ns']:
-            primary_words.append(keyword[0])
-    # title_text = " ".join([keyword[0] for keyword in keywords if keyword[1] in ['nr','nz']]) * 2
-    abstract_text = " ".join(doc.split(' ')[:15])
-    for word, tag in jieba.posseg.cut(abstract_text):
-        if tag in ['nr', 'nz']:
-            primary_words.append(word)
-    primary_text = " ".join(primary_words)
-    temp_keywords = [keyword for keyword in
-                     extract_tags(primary_text * 2 + title * 3 + " ".join(doc.split(' ')[:15]) * 2 + doc,
-                                  topK=3)]
-
-
 def generate_name(word_tags):
     name_pos = ['ns', 'n', 'vn', 'nr', 'nt', 'eng', 'nrt']
     for word_tag in word_tags:
@@ -215,5 +199,5 @@ def extract_keyword_ensemble(test_data):
 
 
 if __name__ == '__main__':
-    evaluate()
+    # evaluate()
     extract_keyword_ensemble(test_data)
